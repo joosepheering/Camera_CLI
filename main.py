@@ -11,20 +11,70 @@ commands picture to be imported to ubird
 creates buffer file to compare uploaded picture names and to be uploaded picture names,
 creates threads for different handlers,
 """
+from src.gps import GPS
+from src.db import DB
 from src.camera import Camera
+from src.ubird import UBird
 
 CAMERA_NAME = "Sony Alpha-A6000"
-PHOTOS_FOLDER = "/home/roos/Desktop/gphoto/"
+PHOTOS_FOLDER = "/home/roos/Desktop/Pictures/"
+JSON_FILE = "/Users/roos/Desktop/gphoto_json/db.json"
 
 
 class Main:
 
     def __init__(self):
-        cam = Camera(CAMERA_NAME, PHOTOS_FOLDER)
-        cam.connect()
-        photo = cam.capture_photo_and_download()
-        print(photo)
+        self.gps = GPS()
+        self.db = DB(JSON_FILE)
+        self.cam = Camera(CAMERA_NAME, PHOTOS_FOLDER)
+        # self.ubird = UBird
+        # self.ubird.authenticate()
+
+    def run(self):
+        # 1. Thread
+        """ Make a picture command"""
+        # 2. Thread
+        """
+        Make a picture command
+        Make sure camera is connected
+        Get coordinates
+        Trigger camera -> 2. Thread -> Receive input file name.
+        When input file name, Write exif
+        Make checksum
+        Write json file new line with "uploaded" == false.
+        Run 2. Thread instance
+        """
+        # 3. Thread
+        """
+        Loop through json file, search for "uploaded" == false file. - open json file as lines. for line in lines:
+            GET_is_picture_uploaded. Ask Picture by checksum. Check if it has been uploaded
+                IF TRUE:
+                    IF Read from json, if it "imported" == False:
+                        IF import() == True:
+                        Start from beginning. Pass
+                ELSE:
+                    upload to ubird
+                        IF return == 200:
+                            change json "uploaded" == True
+                            import to ubird
+                                IF return == 200:
+                                    change json "imported" == True
+                                ELSE:
+        """
+
+        self.db.add_new_picture(PHOTOS_FOLDER + 'DSC00325.JPG', 'check5', '45.3432', '85.3242', False, False)
+
+
+    def start_trigger_timer(self):
+        """
+        Run in thread
+        :return:
+        """
+        pass
+
+
 
 
 if __name__ == "__main__":
     main = Main()
+    main.run()
