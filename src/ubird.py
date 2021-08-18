@@ -62,7 +62,7 @@ class UBird:
         cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/upload/project/{project_id}/pictures" -H "accept: */*" -H "Content-Type: multipart/form-data" -H "Authorization: Bearer {token}" -F "file=@{photo_path};type=image/jpeg"')
 
 
-    def import_photo(self, photo_path: str, line_id: str):
+    def import_photo(self, photo_path: str, lat: str, lon: str, line_id: str):
         """
         1. Check if photo exists
         2. Import photo to ubird
@@ -73,6 +73,8 @@ class UBird:
                 change json "imported" == False
                 return False
         :param photo_path:
+        :param lat:
+        :param lon:
         :param line_id:
         :return: True if is imported
         """

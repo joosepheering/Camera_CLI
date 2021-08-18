@@ -17,7 +17,7 @@ from src.camera import Camera
 from src.ubird import UBird
 
 CAMERA_NAME = "Sony Alpha-A6000"
-PHOTOS_FOLDER = "/home/roos/Desktop/Pictures/"
+PHOTOS_FOLDER = "/Users/roos/Desktop/Pictures/"
 JSON_FILE = "/Users/roos/Desktop/gphoto_json/db.json"
 
 
@@ -61,9 +61,11 @@ class Main:
                                     change json "imported" == True
                                 ELSE:
         """
-
-        self.db.add_new_picture(PHOTOS_FOLDER + 'DSC00325.JPG', 'check5', '45.3432', '85.3242', False, False)
-
+        coordinates = self.gps.get_coordinates()
+        pictures_list = ['DSC00325.JPG', 'DSC00324.JPG']
+        for pic in pictures_list:
+            result = self.db.add_new_picture(PHOTOS_FOLDER + pic, coordinates["lat"], coordinates["lon"], coordinates["alt"], False, False)
+            print(result)
 
     def start_trigger_timer(self):
         """
@@ -71,8 +73,6 @@ class Main:
         :return:
         """
         pass
-
-
 
 
 if __name__ == "__main__":

@@ -20,4 +20,4 @@ class GPS:
         Get coordinates from GPS, parse it to dict.
         :return: {"lat": -24.0231, "lon": 0.22132}
         """
-        return {"lat": 58.6749, "lon": 25.0485}
+        return {"lat": 58.6749, "lon": 25.0485, "alt": 15.87}
