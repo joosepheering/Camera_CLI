@@ -15,20 +15,46 @@ from src.gps import GPS
 from src.db import DB
 from src.camera import Camera
 from src.ubird import UBird
+from subprocess import PIPE, Popen
+from time import sleep
+import concurrent.futures
 
 CAMERA_NAME = "Sony Alpha-A6000"
 PHOTOS_FOLDER = "/Users/roos/Desktop/Pictures/"
-JSON_FILE = "/Users/roos/Desktop/gphoto_json/db.json"
+CSV_FILE = "/Users/roos/Desktop/gphoto_json/db.csv"
+SHOOTING_TIME = 0.1
+
+
+def cmdline(command):
+    process = Popen(
+        args=command,
+        stdout=PIPE,
+        shell=True
+    )
+    return process.communicate()[0]
 
 
 class Main:
 
     def __init__(self):
         self.gps = GPS()
-        self.db = DB(JSON_FILE)
+        self.db = DB(CSV_FILE)
         self.cam = Camera(CAMERA_NAME, PHOTOS_FOLDER)
         # self.ubird = UBird
         # self.ubird.authenticate()
+
+    def __write_exif(self, picture_path: str, lat: float, lon: float, alt: float):
+
+        if lat > 0:
+            lat_m = 'N'
+        else:
+            lat_m = 'S'
+        if lon > 0:
+            lon_m = 'E'
+        else:
+            lon_m = 'W'
+        return cmdline(f"exiftool {picture_path} -gpslatitude={lat} -gpslongitude={lon} -gpslatituderef={lat_m}"
+                       f" -gpslongituderef={lon_m}")
 
     def run(self):
         # 1. Thread
@@ -61,18 +87,34 @@ class Main:
                                     change json "imported" == True
                                 ELSE:
         """
-        coordinates = self.gps.get_coordinates()
-        pictures_list = ['DSC00325.JPG', 'DSC00324.JPG']
-        for pic in pictures_list:
-            result = self.db.add_new_picture(PHOTOS_FOLDER + pic, coordinates["lat"], coordinates["lon"], coordinates["alt"], False, False)
-            print(result)
+        pictures_list = ['DSC00323.JPG', 'DSC00324.JPG']
 
-    def start_trigger_timer(self):
+        # Create first thread
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            while True:
+                timer = executor.submit(self.start_trigger_timer, SHOOTING_TIME)
+                if timer.result():
+                    print("Take picture")
+                    coordinates = self.gps.get_coordinates()
+                    if self.cam.connect():
+                        camera = executor.submit(self.cam.capture_photo_and_download)
+                        pic_path = camera.result()
+                        print(pic_path)
+
+        # for pic in pictures_list:
+        #     result = self.db.add_new_picture(PHOTOS_FOLDER + pic, coordinates["lat"], coordinates["lon"], coordinates["alt"], False, False)
+        #     print(result)
+        # not_uploaded_list = self.db.get_not_uploaded_lines()
+        # print(not_uploaded_list)
+        # set = self.db.set_picture_uploaded(not_uploaded_list[0]) # Send full row as list
+
+    def start_trigger_timer(self, seconds):
         """
         Run in thread
         :return:
         """
-        pass
+        sleep(seconds)
+        return True
 
 
 if __name__ == "__main__":

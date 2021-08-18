@@ -1,4 +1,4 @@
-import json
+import csv
 import os
 import piexif
 from PIL import Image
@@ -15,13 +15,8 @@ def cmdline(command):
 
 
 class DB:
-    """
-    FLOW
-    1. picture has been created to folder.
-    2.
-    """
 
-    def __init__(self, json_file: str):
+    def __init__(self, csv_file: str):
         """
         Keeps track of:
         picture paths,
@@ -29,78 +24,102 @@ class DB:
         coordinates,
         uploaded to ubird,
         imported to ubird
-        :param json_file: json file to store pictures data
+        :param csv_file: json file to store pictures data
         """
-        self.json_file = json_file
+        self.csv_file = csv_file
+        self.create_csv_file()
+
+    def create_csv_file(self):
+        try:
+            if not os.path.exists(self.csv_file):
+                with open(self.csv_file, 'w+') as csv_file:
+                    reader = csv.DictReader(csv_file)
+                    for row in reader:
+                        print(row)
+                csv_file.close()
+                return True
+        except IOError as e:
+            print(f"Something went wrong when writing to the file: {e}")
+            return False
 
     def add_new_picture(self, path: str, lat: float, lon: float, alt: float, uploaded: bool, imported: bool) -> bool:
-        """
-        Check if file already exists with checksum.
-        If not, then add new JSON item to file.
 
-        :param path:
-        :param checksum:
-        :param lat:
-        :param lon:
-        :param alt:
-        :param uploaded:
-        :param imported
-        :return: True if file has been added
-        """
         # Check if file exists.
         if self.__picture_exists(path):
             #  Write lat/lon to exif
             if self.__write_exif(path, lat, lon, alt):
                 # Create MD5 Checksum
                 checksum = self.__generate_checksum(path)
-                # Create JSON
-                data = {'picture': []}
-                data['picture'].append({
-                    'path': path,
-                    'checksum': checksum,
-                    'lat': lat,
-                    'lon': lon,
-                    'alt': alt,
-                    'uploaded': uploaded,
-                    'imported': imported
-                })
+                # Create CSV
+                fields = [path, checksum, lat, lon, alt, uploaded, imported]
                 try:
-                    if not os.path.exists(self.json_file):
-                        open(self.json_file, 'w+').close()
-                    # Clear file and write coordinates
-                    with open(self.json_file, 'a+') as json_file:
-                        json.dump(data, json_file)
-                    json_file.close()
+                    with open(self.csv_file, 'a') as f:
+                        writer = csv.writer(f)
+                        writer.writerow(fields)
+                        f.close()
                     return True
                 except IOError as e:
                     print(f"Something went wrong when writing to the file: {e}")
                     return False
 
     def get_not_uploaded_lines(self) -> list:
-        """
-
-        :return: list of JSON items of pictures that are not uploaded
-        """
-        pass
+        try:
+            rows_list = []
+            with open(self.csv_file, 'r') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    if row[5] == "False":
+                        rows_list.append(row)
+                f.close()
+            return rows_list
+        except IOError as e:
+            print(f"Something went wrong when writing to the file: {e}")
 
     def get_not_imported_lines(self) -> list:
-        """
+        try:
+            rows_list = []
+            with open(self.csv_file, 'r') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    if row[6] == "False":
+                        rows_list.append(row)
+                f.close()
+            return rows_list
+        except IOError as e:
+            print(f"Something went wrong when writing to the file: {e}")
+            return []
 
-        :return: list of JSON items of pictures that are not imported
-        """
-        pass
+    def set_picture_uploaded(self, row_to_change):
+        try:
+            csv_list = []
+            pointer = None
+            with open(self.csv_file, 'r') as f:
+                reader = csv.reader(f)
+                i = 0
+                for row in reader:
+                    if row[1] == row_to_change[1]:
+                        pointer = i
+                    else:
+                        csv_list.append(row)
+                    i += 1
+                f.close()
+
+            with open(self.csv_file, 'a') as f:
+                writer = csv.writer(f)
+                f.close()
+
+
+
+
+        except IOError as e:
+            print(f"Something went wrong when writing to the file: {e}")
+            return []
 
     def __picture_exists(self, picture_path: str) -> bool:
         return os.path.isfile(picture_path)
 
     def __write_exif(self, picture_path: str, lat: float, lon: float, alt: float):
-        """
 
-        :param picture_path:
-        :param lat:
-        :param lon:
-        :return:
-        """
         if lat > 0:
             lat_m = 'N'
         else:
@@ -113,29 +132,6 @@ class DB:
                        f" -gpslongituderef={lon_m}")
 
     def __generate_checksum(self, picture_path) -> str:
-        """
-        Create MD5 checksum.
 
-        :param picture_path: picture to use
-        :return: checksum
-        """
         md5 = str(cmdline(f"md5 {picture_path}"))
         return str(md5.split('= ')[1])[:-3]
-
-"""
-1. Generate JSON file. 
-    IF photos is empty:
-        create empty json file
-    ELSE: 
-        loop through all images in this file
-            get_path
-            get_coordinate_from_exif
-            generate_checksum
-            write_to_json_file
-
-
-
-
-
-
-"""
