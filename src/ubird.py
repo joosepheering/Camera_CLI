@@ -61,7 +61,7 @@ class UBird:
         """
         # TODO Return result
         # TODO If true, then change json file "uploaded" => True
-        cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/upload/project/{project_id}/pictures" -H "accept: */*" -H "Content-Type: multipart/form-data" -H "Authorization: Bearer {token}" -F "file=@{photo_path};type=image/jpeg"')
+        return cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/upload/project/{project_id}/pictures" -H "accept: */*" -H "Content-Type: multipart/form-data" -H "Authorization: Bearer {token}" -F "file=@{photo_path};type=image/jpeg"')
 
     def import_photo(self, project_id: str, lat: str, lon: str, line_id: str):
         """
