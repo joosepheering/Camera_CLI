@@ -39,7 +39,7 @@ class UBird:
         """
         pass
 
-    def upload_photo(self, photo_path: str, token: str,  project_id: str):
+    def upload_photo(self, arg: list):
         """
         1. Check if photo exists, both in json file and in folder
         2. Get Checksum from uBird.
@@ -54,13 +54,14 @@ class UBird:
                     change json "uploaded" == False
                     return False
 
-        :param photo_path: Path of photo
-        :param token:
-        :param project_id:
-        :return: True if is uploaded
+        :param arg: [photo_path, token, project_id]
+        :return:
         """
         # TODO Return result
         # TODO If true, then change json file "uploaded" => True
+        photo_path = arg[0]
+        token = arg[1]
+        project_id = arg[2]
         return cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/upload/project/{project_id}/pictures" -H "accept: */*" -H "Content-Type: multipart/form-data" -H "Authorization: Bearer {token}" -F "file=@{photo_path};type=image/jpeg"')
 
     def import_photo(self, project_id: str, lat: str, lon: str, line_id: str):
