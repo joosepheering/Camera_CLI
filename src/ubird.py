@@ -59,6 +59,9 @@ class UBird:
         """
         # TODO Return result
         # TODO If true, then change json file "uploaded" => True
+        print(arg[0])
+        print(arg[1])
+        print(arg[2])
         photo_path = arg[0]
         token = arg[1]
         project_id = arg[2]

@@ -104,8 +104,8 @@ class Main:
                         print(pic_path)
                 if camera.result():
                     print(f"Start upload Thread with {pic_path}")
-                    arg = [pic_path, TOKEN, PROJECT_ID]
-                    ubird = executor.submit(self.ubird.upload_photo, arg)
+                    arguments = [(pic_path, TOKEN, PROJECT_ID)]
+                    ubird = executor.submit(self.ubird.upload_photo, arguments)
                     result = ubird.result()
                     print(result)
 
