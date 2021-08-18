@@ -86,7 +86,7 @@ class UBird:
         lat2 = -89.9
         lon2 = 179.9
 
-        cmdline(f'curl -X POST https://api.ubird.wtf/ubird/jobs//project/{self.project_id}/uploads/{lat1}/{lon1}/{lat2}/{lon2}/start?powerLineName={powerline_name}')
+        cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/jobs/project/{self.project_id}/uploads/{lat1}/{lon1}/{lat2}/{lon2}/start?powerLineName={powerline_name}" -H "accept: application/json" -H "Authorization: Bearer {TOKEN}"')
 
     def __photo_exist(self, photo_path):
         """
