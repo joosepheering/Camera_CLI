@@ -1,17 +1,20 @@
 from threading import Thread
 from src.gps import GPS
-from src.db import DB
 from src.camera import Camera
 from src.ubird import UBird
 from subprocess import PIPE, Popen
 from time import sleep
 import os
+from os.path import isfile, join
+import shutil
 
 CAMERA_NAME = "Sony Alpha-A6000"
-PHOTOS_FOLDER = "/Users/roos/Desktop/Pictures/"
+PHOTOS_FOLDER = "/home/roos/Desktop/Pictures/"
+UPLOADED_FOLDER = "home/roos/Desktop/UploadedPictures/"
 CSV_FILE = "/Users/roos/Desktop/gphoto_json/db.csv"
 SHOOTING_TIME = 0.1
 PROJECT_ID = "99"
+EXTENSIONS = [".JPEG", ".JPG", "jpg", "jpeg"]
 
 
 def cmdline(command):
@@ -72,7 +75,18 @@ class Second(Thread):
 
     def run(self):
         while True:
-            print("B")
+            # TODO Get file names
+            onlyfiles = [f for f in os.listdir(PHOTOS_FOLDER) if isfile(join(PHOTOS_FOLDER, f))]
+            for file in onlyfiles:
+                for ext in EXTENSIONS:
+                    if ext in file:
+                        # Start uploading image
+                        if self.ubird.upload_photo(PHOTOS_FOLDER + file):
+                            # Start importing image
+                            if self.ubird.import_photo():
+                                # Move this photo to another folder
+                                shutil.move(PHOTOS_FOLDER + file, UPLOADED_FOLDER)
+                                # TODO Check if UPLOADED_FOLDER is full.
 
 
 First()
