@@ -70,9 +70,7 @@ class Camera:
         self.folder_to_store = folder_to_store
 
     def connect(self) -> bool:
-        # TODO Next line is ugly and unnecessary.
-        connected = False
-        while not connected:
+        while True:
             if self.__is_connected():
                 print("Camera is connected")
                 return True
@@ -175,6 +173,7 @@ class UploadThread(Thread):
 
 if __name__ == "__main__":
 
+    # TODO Read user input for TOKEN, Project_ID and power line name
     CameraThread()
     UploadThread()
     while True:
