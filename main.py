@@ -23,7 +23,6 @@ CAMERA_NAME = "Sony Alpha-A6000"
 PHOTOS_FOLDER = "/Users/roos/Desktop/Pictures/"
 CSV_FILE = "/Users/roos/Desktop/gphoto_json/db.csv"
 SHOOTING_TIME = 0.1
-TOKEN = ""
 PROJECT_ID = "99"
 
 
@@ -42,7 +41,7 @@ class Main:
         self.gps = GPS()
         self.db = DB(CSV_FILE)
         self.cam = Camera(CAMERA_NAME, PHOTOS_FOLDER)
-        self.ubird = UBird
+        self.ubird = UBird(PROJECT_ID)
         # self.ubird.authenticate()
 
     def write_exif(self, picture_path: str, lat: float, lon: float, alt: float):
@@ -104,8 +103,7 @@ class Main:
                         print(pic_path)
                 if camera.result():
                     print(f"Start upload Thread with {pic_path}")
-                    arguments = [(pic_path, TOKEN, PROJECT_ID)]
-                    ubird = executor.submit(self.ubird.upload_photo, arguments)
+                    ubird = executor.submit(self.ubird.upload_photo, pic_path)
                     result = ubird.result()
                     print(result)
 
