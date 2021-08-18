@@ -7,7 +7,6 @@ from os.path import isfile, join
 import serial
 import signal
 import shutil
-import random
 import os
 
 CAMERA_NAME = "Sony Alpha-A6000"
