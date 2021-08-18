@@ -79,7 +79,7 @@ class Camera:
         Create new and unique name for each image.
         :return: Full folder path of image + image name + file extension
         """
-        return f"{self.folder_to_store}/{datetime.now().strftime('%Y-%m-%d-%H:%M:%S')}.jpg"
+        return f"{self.folder_to_store}{datetime.now().strftime('%Y-%m-%d-%H:%M:%S')}.jpg"
 
     def __clear_camera_memory(self):
         """
