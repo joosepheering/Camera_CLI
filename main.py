@@ -106,6 +106,9 @@ class Main:
                     ubird = executor.submit(self.ubird.upload_photo, pic_path)
                     result = ubird.result()
                     print(result)
+                    ubird = executor.submit(self.ubird.import_photo)
+                    result = ubird.result()
+                    print(result)
 
         # for pic in pictures_list:
         #     result = self.db.add_new_picture(PHOTOS_FOLDER + pic, coordinates["lat"], coordinates["lon"], coordinates["alt"], False, False)
