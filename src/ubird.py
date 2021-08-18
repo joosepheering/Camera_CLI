@@ -81,10 +81,10 @@ class UBird:
         :return: True if is imported
         """
         powerline_name = "Demo"
-        lat1 = 90.0
-        lon1 = -180.0
-        lat2 = -90.0
-        lon2 = 180.0
+        lat1 = 89.9
+        lon1 = -179.9
+        lat2 = -89.9
+        lon2 = 179.9
 
         cmdline(f'curl -X POST https://api.ubird.wtf/ubird/jobs//project/{self.project_id}/uploads/{lat1}/{lon1}/{lat2}/{lon2}/start?powerLineName={powerline_name}')
 
