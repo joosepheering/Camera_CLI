@@ -43,8 +43,7 @@ class Main:
         # self.ubird = UBird
         # self.ubird.authenticate()
 
-    def __write_exif(self, picture_path: str, lat: float, lon: float, alt: float):
-
+    def write_exif(self, picture_path: str, lat: float, lon: float, alt: float):
         if lat > 0:
             lat_m = 'N'
         else:
@@ -95,10 +94,11 @@ class Main:
                 timer = executor.submit(self.start_trigger_timer, SHOOTING_TIME)
                 if timer.result():
                     print("Take picture")
-                    coordinates = self.gps.get_coordinates()
+                    cord = self.gps.get_coordinates()
                     if self.cam.connect():
                         camera = executor.submit(self.cam.capture_photo_and_download)
                         pic_path = camera.result()
+                        self.write_exif(pic_path, cord[0], cord[1], cord[2])
                         print(pic_path)
 
         # for pic in pictures_list:
