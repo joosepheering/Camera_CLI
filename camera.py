@@ -65,10 +65,10 @@ class GPS:
             print('No GPS lock')
             return [0.0, 0.0, False]
         else:
-            lat = float(data[3]) * 100
-            lon = float(data[5]) * 100
-            print("Latitude =" + data[3])
-            print("Longitude =" + data[5])
+            lat = float(data[3]) / 100
+            lon = float(data[5]) / 100
+            print(f"Latitude = {lat}")
+            print(f"Longitude = {lon}")
             return [lat, lon, True]
 
 
@@ -148,12 +148,12 @@ class CameraThread(Thread):
         while True:
             try:
                 if start_trigger_timer(SHOOTING_TIME):
-                    print("Take picture")
                     cord = self.gps.get_coordinates()
                     # IF GPS has lock
                     if cord[2]:
                         # IF Camera is connected
                         if self.cam.connect():
+                            print("Take picture")
                             picture_path = self.cam.capture_photo_and_download()
                             print(picture_path)
                             write_exif(picture_path, cord[0], cord[1])
