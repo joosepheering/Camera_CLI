@@ -22,7 +22,7 @@ def cmdline(command):
     return process.communicate()[0]
 
 
-def write_exif(self, picture_path: str, lat: float, lon: float, alt: float):
+def write_exif(picture_path: str, lat: float, lon: float):
     if lat > 0:
         lat_m = 'N'
     else:
@@ -56,7 +56,7 @@ class First(Thread):
                 if self.cam.connect():
                     picture_path = self.cam.capture_photo_and_download()
                     print(picture_path)
-                    write_exif(picture_path, cord[0], cord[1], cord[2])
+                    write_exif(picture_path, cord[0], cord[1])
                     print(f"Picture taken: {picture_path}")
 
 
