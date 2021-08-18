@@ -1,10 +1,4 @@
-"""
-GPS handler.
 
-It:
-creates connection with Zubax GNSS using usb cable and ros topics,
-reads coordinates from Zubax GNSS,
-"""
 import random
 
 
@@ -19,10 +13,6 @@ class GPS:
         pass
 
     def get_coordinates(self):
-        """
-        Get coordinates from GPS, parse it to dict.
-        :return: {"lat": -24.0231, "lon": 0.22132}
-        """
         lat = float(self.lat + round(random.random(), 4))
         lon = float(self.lon + round(random.random(), 4))
         return [lat, lon]

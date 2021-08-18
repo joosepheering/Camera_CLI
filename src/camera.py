@@ -1,11 +1,3 @@
-"""
-Camera handler.
-
-It:
-checks connection to the camera,
-captures and downloads images,
-clears memory and changes parameters.
-"""
 import os
 import signal
 from subprocess import PIPE, Popen
