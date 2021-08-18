@@ -5,6 +5,7 @@ from src.camera import Camera
 from src.ubird import UBird
 from subprocess import PIPE, Popen
 from time import sleep
+import os
 
 CAMERA_NAME = "Sony Alpha-A6000"
 PHOTOS_FOLDER = "/Users/roos/Desktop/Pictures/"
@@ -40,6 +41,7 @@ def start_trigger_timer(seconds):
     return True
 
 
+# TODO Get coordinates from gps. Rest of this class works
 class First(Thread):
     def __init__(self):
         Thread.__init__(self)
@@ -58,6 +60,7 @@ class First(Thread):
                     print(picture_path)
                     write_exif(picture_path, cord[0], cord[1])
                     print(f"Picture taken: {picture_path}")
+                    os.remove(f"{picture_path}_original")
 
 
 class Second(Thread):
