@@ -14,7 +14,7 @@ UPLOADED_FOLDER = "home/roos/Desktop/UploadedPictures/"
 CSV_FILE = "/Users/roos/Desktop/gphoto_json/db.csv"
 SHOOTING_TIME = 0.1
 PROJECT_ID = "99"
-EXTENSIONS = [".JPEG", ".JPG", "jpg", "jpeg"]
+EXTENSIONS = [".JPEG", ".JPG", "jpg", "jpeg", ".png", ".PNG"]
 
 
 def cmdline(command):
@@ -76,17 +76,18 @@ class Second(Thread):
     def run(self):
         while True:
             # TODO Get file names
-            onlyfiles = [f for f in os.listdir(PHOTOS_FOLDER) if isfile(join(PHOTOS_FOLDER, f))]
-            for file in onlyfiles:
-                for ext in EXTENSIONS:
-                    if ext in file:
-                        # Start uploading image
-                        if self.ubird.upload_photo(PHOTOS_FOLDER + file):
-                            # Start importing image
-                            if self.ubird.import_photo():
-                                # Move this photo to another folder
-                                shutil.move(PHOTOS_FOLDER + file, UPLOADED_FOLDER)
-                                # TODO Check if UPLOADED_FOLDER is full.
+            files = [f for f in os.listdir(PHOTOS_FOLDER) if isfile(join(PHOTOS_FOLDER, f))]
+            if len(files) > 0:
+                for file in files:
+                    for ext in EXTENSIONS:
+                        if ext in file:
+                            # Start uploading image
+                            if self.ubird.upload_photo(PHOTOS_FOLDER + file):
+                                # Start importing image
+                                if self.ubird.import_photo():
+                                    # Move this photo to another folder
+                                    shutil.move(PHOTOS_FOLDER + file, UPLOADED_FOLDER)
+                                    # TODO Check if UPLOADED_FOLDER is full.
 
 
 First()

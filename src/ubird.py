@@ -64,7 +64,7 @@ class UBird:
         # TODO If true, then change json file "uploaded" => True
         return cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/upload/project/{self.project_id}/pictures" -H "accept: */*" -H "Content-Type: multipart/form-data" -H "Authorization: Bearer {TOKEN}" -F "file=@{photo_path};type=image/jpeg"')
 
-    def import_photo(self):
+    def import_photo(self) -> bool:
         """
         1. Check if photo exists
         2. Import photo to ubird
@@ -86,7 +86,7 @@ class UBird:
         lat2 = -89.9
         lon2 = 179.9
 
-        cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/jobs/project/{self.project_id}/uploads/{lat1}/{lon1}/{lat2}/{lon2}/start?powerLineName={powerline_name}" -H "accept: application/json" -H "Authorization: Bearer {TOKEN}"')
+        return cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/jobs/project/{self.project_id}/uploads/{lat1}/{lon1}/{lat2}/{lon2}/start?powerLineName={powerline_name}" -H "accept: application/json" -H "Authorization: Bearer {TOKEN}"')
 
     def __photo_exist(self, photo_path):
         """
