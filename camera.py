@@ -4,12 +4,14 @@ from datetime import datetime
 from time import sleep
 from pathlib import Path
 from os.path import isfile, join
+import serial
 import signal
 import shutil
 import random
 import os
 
 CAMERA_NAME = "Sony Alpha-A6000"
+GPS_PATH = "/dev/cu.usbmodem141101"
 GPHOTO_PROCESS_NAME = "gphoto2"
 PHOTOS_FOLDER = f"{Path.home()}/Desktop/Pictures/"
 UPLOADED_FOLDER = f"{Path.home()}/Desktop/Uploaded/"
@@ -50,17 +52,25 @@ def start_trigger_timer(seconds):
 class GPS:
 
     def __init__(self):
-        self.lat = 58.0
-        self.lon = 25.0
-        pass
-
-    def __connect_to_gps(self):
-        pass
+        self.ser = serial.Serial(GPS_PATH, 9600, timeout=5.0)
 
     def get_coordinates(self):
-        lat = float(self.lat + round(random.random(), 4))
-        lon = float(self.lon + round(random.random(), 4))
-        return [lat, lon]
+        x = str(self.ser.read(1200))
+        print(x)
+        pos1 = x.find("$GPRMC")
+        pos2 = x.find("\n", pos1)
+        loc = x[pos1:pos2]
+        data = loc.split(',')
+
+        if data[2] == 'V':
+            print('No GPS lock')
+            return [0.0, 0.0, False]
+        else:
+            lat = float(data[3]) * 100
+            lon = float(data[5]) * 100
+            print("Latitude =" + data[3])
+            print("Longitude =" + data[5])
+            return [lat, lon, True]
 
 
 class Camera:
@@ -141,13 +151,16 @@ class CameraThread(Thread):
                 if start_trigger_timer(SHOOTING_TIME):
                     print("Take picture")
                     cord = self.gps.get_coordinates()
-                    if self.cam.connect():
-                        picture_path = self.cam.capture_photo_and_download()
-                        print(picture_path)
-                        write_exif(picture_path, cord[0], cord[1])
-                        sleep(1)
-                        print(f"Picture taken: {picture_path}")
-                        os.remove(f"{picture_path}_original")
+                    # IF GPS has lock
+                    if cord[2]:
+                        # IF Camera is connected
+                        if self.cam.connect():
+                            picture_path = self.cam.capture_photo_and_download()
+                            print(picture_path)
+                            write_exif(picture_path, cord[0], cord[1])
+                            sleep(1)
+                            print(f"Picture taken: {picture_path}")
+                            os.remove(f"{picture_path}_original")
             except Exception as e:
                 print(e)
 
