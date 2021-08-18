@@ -1,6 +1,4 @@
-Dependencies:
-
-camera_handler: 
+Tools to install before executing:
 
 sudo apt-get install gphoto2
 
