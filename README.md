@@ -8,4 +8,4 @@ sudo apt-get install curl
 
 Create 2 folders:
  ~/Desktop/Pictures
- ~/Desktop/UploadedPictures
+ ~/Desktop/Uploaded

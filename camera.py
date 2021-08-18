@@ -137,15 +137,19 @@ class CameraThread(Thread):
 
     def run(self):
         while True:
-            if start_trigger_timer(SHOOTING_TIME):
-                print("Take picture")
-                cord = self.gps.get_coordinates()
-                if self.cam.connect():
-                    picture_path = self.cam.capture_photo_and_download()
-                    print(picture_path)
-                    write_exif(picture_path, cord[0], cord[1])
-                    print(f"Picture taken: {picture_path}")
-                    os.remove(f"{picture_path}_original")
+            try:
+                if start_trigger_timer(SHOOTING_TIME):
+                    print("Take picture")
+                    cord = self.gps.get_coordinates()
+                    if self.cam.connect():
+                        picture_path = self.cam.capture_photo_and_download()
+                        print(picture_path)
+                        write_exif(picture_path, cord[0], cord[1])
+                        sleep(1)
+                        print(f"Picture taken: {picture_path}")
+                        os.remove(f"{picture_path}_original")
+            except Exception as e:
+                print(e)
 
 
 class UploadThread(Thread):
@@ -157,18 +161,21 @@ class UploadThread(Thread):
 
     def run(self):
         while True:
-            files = [f for f in os.listdir(PHOTOS_FOLDER) if isfile(join(PHOTOS_FOLDER, f))]
-            if len(files) > 0:
-                for file in files:
-                    for ext in EXTENSIONS:
-                        if ext in file:
-                            # Start uploading image
-                            if self.ubird.upload_photo(PHOTOS_FOLDER + file):
-                                # Start importing image
-                                if self.ubird.import_photo():
-                                    # Move this photo to another folder
-                                    shutil.move(PHOTOS_FOLDER + file, UPLOADED_FOLDER)
-                                    # TODO Check if UPLOADED_FOLDER is full.
+            try:
+                files = [f for f in os.listdir(PHOTOS_FOLDER) if isfile(join(PHOTOS_FOLDER, f))]
+                if len(files) > 0:
+                    for file in files:
+                        for ext in EXTENSIONS:
+                            if ext in file:
+                                # Start uploading image
+                                if self.ubird.upload_photo(PHOTOS_FOLDER + file):
+                                    # Start importing image
+                                    if self.ubird.import_photo():
+                                        # Move this photo to another folder
+                                        shutil.move(PHOTOS_FOLDER + file, UPLOADED_FOLDER)
+                                        # TODO Check if UPLOADED_FOLDER is full.
+            except Exception as e:
+                print(e)
 
 
 if __name__ == "__main__":
