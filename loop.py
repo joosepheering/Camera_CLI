@@ -15,6 +15,7 @@ PHOTOS_FOLDER = f"{Path.home()}/Desktop/Pictures/"
 UPLOADED_FOLDER = f"{Path.home()}/Desktop/Uploaded/"
 SHOOTING_TIME = 0.1
 PROJECT_ID = "99"
+POWER_LINE_NAME = "Demo"
 EXTENSIONS = [".JPEG", ".JPG", "jpg", "jpeg", ".png", ".PNG"]
 TOKEN = ""
 
@@ -128,7 +129,7 @@ class UBird:
 
 
 # TODO Get coordinates from gps. Rest of this class works
-class Camera_Thread(Thread):
+class CameraThread(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.gps = GPS()
@@ -149,10 +150,10 @@ class Camera_Thread(Thread):
                     os.remove(f"{picture_path}_original")
 
 
-class Upload_Thread(Thread):
+class UploadThread(Thread):
     def __init__(self):
         Thread.__init__(self)
-        self.ubird = UBird(PROJECT_ID)
+        self.ubird = UBird(PROJECT_ID, POWER_LINE_NAME)
         self.daemon = True
         self.start()
 
@@ -174,7 +175,7 @@ class Upload_Thread(Thread):
 
 if __name__ == "__main__":
 
-    Camera_Thread()
-    Upload_Thread()
+    CameraThread()
+    UploadThread()
     while True:
         pass
