@@ -49,6 +49,7 @@ def start_trigger_timer(seconds):
 
 
 class GPS:
+    # TODO Figure out, why GPS coordinates are off by couple of tenths.
 
     def __init__(self):
         self.ser = serial.Serial(GPS_PATH, 9600, timeout=5.0)
