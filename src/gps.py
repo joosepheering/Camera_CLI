@@ -29,5 +29,5 @@ class GPS:
         lat = float(self.lat + self.digit)
         lon = float(self.lon + self.digit)
         alt = float(self.alt + self.digit)
-        return {lat, lon, alt}
+        return [lat, lon, alt]
 
