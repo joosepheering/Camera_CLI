@@ -55,6 +55,7 @@ class First(Thread):
                 cord = self.gps.get_coordinates()
                 if self.cam.connect():
                     picture_path = self.cam.capture_photo_and_download()
+                    print(picture_path)
                     write_exif(picture_path, cord[0], cord[1], cord[2])
                     print(f"Picture taken: {picture_path}")
 
