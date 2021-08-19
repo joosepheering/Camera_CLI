@@ -12,15 +12,15 @@ import sys
 import os
 
 CAMERA_NAME = "Sony Alpha-A6000"
-GPS_PATH = "/dev/cu.usbmodem141401"
 GPHOTO_PROCESS_NAME = "gphoto2"
 PHOTOS_FOLDER = f"{Path.home()}/Desktop/Pictures/"
 UPLOADED_FOLDER = f"{Path.home()}/Desktop/Uploaded/"
 SHOOTING_TIME = 0.1
 EXTENSIONS = [".JPEG", ".JPG", "jpg", "jpeg", ".png", ".PNG"]
-PROJECT_ID = "99"
-POWER_LINE_NAME = "Demo"
-TOKEN = ""
+GPS_PATH = ""               # "/dev/cu.usbmodem141401"
+PROJECT_ID = ""             # 99
+POWER_LINE_NAME = ""        # Demo
+TOKEN = ""                  # sdsffieo98788yf34h98
 
 
 def cmdline(command):
@@ -204,15 +204,21 @@ if __name__ == "__main__":
     argv = sys.argv[1:]
     got_correct_arguments = False
 
+    def show_options():
+        print('ALL THESE OPTIONS ARE REQUIRED: -g <gps_serial_path>  -p <project_id>  -l <power_line_name>  -t <token>')
+        print("-g <gps_serial_path>  = '/dev/cu.usbmodem141401' ")
+        print("-p <project_id>  = 99")
+        print("-l <power_line_name> == Demo")
+        print("-t <token> == fdkmfslkmnfenklfm")
+
     try:
         opts, args = getopt.getopt(argv, "hg:p:l:t:", ["gps_serial_path=", "project_id=", "power_line_name=", "token="])
     except getopt.GetoptError:
-        print('ALL THESE OPTIONS ARE REQUIRED: -g <gps_serial_path>  -t <token>  -p <project_id>  -l <power_line_name>')
+        show_options()
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('ALL THESE OPTIONS ARE REQUIRED: '
-                  '-g <gps_serial_path>  -p <project_id>  -l <power_line_name>  -t <token>')
+            show_options()
             sys.exit()
         elif opt in ("-g", "--gps_serial_path"):
             GPS_PATH = str(arg).strip().replace('"', "")
@@ -223,11 +229,10 @@ if __name__ == "__main__":
         elif opt in ("-t", "--token"):
             TOKEN = str(arg).strip().replace('"\'', "")
 
-    if len(argv) >= 4:
+    if len(argv) >= 8:
         CameraThread()
         UploadThread()
         while True:
             pass
     else:
-        print('ALL THESE OPTIONS ARE REQUIRED: '
-              '-g <gps_serial_path>  -p <project_id>  -l <power_line_name>  -t <token>')
+        show_options()
