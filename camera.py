@@ -49,7 +49,6 @@ def start_trigger_timer(seconds):
 
 
 class GPS:
-    # TODO Figure out, why GPS coordinates are off by couple of tenths.
 
     def __init__(self):
         self.ser = serial.Serial(GPS_PATH, 9600, timeout=5.0)
@@ -66,11 +65,19 @@ class GPS:
             print('No GPS lock')
             return [0.0, 0.0, False]
         else:
-            lat = float(data[3]) / 100
-            lon = float(data[5]) / 100
-            print(f"Latitude = {lat}")
-            print(f"Longitude = {lon}")
-            return [lat, lon, True]
+            latitude = data[3]
+            lat_pointer = latitude.find(".")
+            lat_deg = float(latitude[:lat_pointer - 2])
+            lat_min = float(latitude[lat_pointer - 2:]) / 60
+            latitude = lat_deg + lat_min
+
+            longitude = data[5]
+            lon_pointer = longitude.find(".")
+            lon_deg = float(longitude[:lon_pointer - 2])
+            lon_min = float(longitude[lon_pointer - 2:]) / 60
+            longitude = lon_deg + lon_min
+
+            return [latitude, longitude, True]
 
 
 class Camera:
