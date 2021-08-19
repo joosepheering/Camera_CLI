@@ -4,20 +4,22 @@ from datetime import datetime
 from time import sleep
 from pathlib import Path
 from os.path import isfile, join
+import getopt
 import serial
 import signal
 import shutil
+import sys
 import os
 
 CAMERA_NAME = "Sony Alpha-A6000"
-GPS_PATH = "/dev/cu.usbmodem141101"
+GPS_PATH = "/dev/cu.usbmodem141401"
 GPHOTO_PROCESS_NAME = "gphoto2"
 PHOTOS_FOLDER = f"{Path.home()}/Desktop/Pictures/"
 UPLOADED_FOLDER = f"{Path.home()}/Desktop/Uploaded/"
 SHOOTING_TIME = 0.1
+EXTENSIONS = [".JPEG", ".JPG", "jpg", "jpeg", ".png", ".PNG"]
 PROJECT_ID = "99"
 POWER_LINE_NAME = "Demo"
-EXTENSIONS = [".JPEG", ".JPG", "jpg", "jpeg", ".png", ".PNG"]
 TOKEN = ""
 
 
@@ -55,7 +57,6 @@ class GPS:
 
     def get_coordinates(self):
         x = str(self.ser.read(1200))
-        print(x)
         pos1 = x.find("$GPRMC")
         pos2 = x.find("\n", pos1)
         loc = x[pos1:pos2]
@@ -94,6 +95,7 @@ class Camera:
             else:
                 self.__kill_gphoto2_process()
                 print("Camera not connected. Killing gphoto2 process.")
+                sleep(1)
 
     def __is_connected(self) -> bool:
         if self.camera_name in str(cmdline("gphoto2 --auto-detect")):
@@ -143,7 +145,6 @@ class UBird:
         return cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/jobs/project/{self.project_id}/uploads/{lat1}/{lon1}/{lat2}/{lon2}/start?powerLineName={self.power_line_name}" -H "accept: application/json" -H "Authorization: Bearer {TOKEN}"')
 
 
-# TODO Get coordinates from gps. Rest of this class works
 class CameraThread(Thread):
     def __init__(self):
         Thread.__init__(self)
@@ -200,8 +201,33 @@ class UploadThread(Thread):
 
 if __name__ == "__main__":
 
-    # TODO Read user input for TOKEN, Project_ID and power line name
-    CameraThread()
-    UploadThread()
-    while True:
-        pass
+    argv = sys.argv[1:]
+    got_correct_arguments = False
+
+    try:
+        opts, args = getopt.getopt(argv, "hg:p:l:t:", ["gps_serial_path=", "project_id=", "power_line_name=", "token="])
+    except getopt.GetoptError:
+        print('ALL THESE OPTIONS ARE REQUIRED: -g <gps_serial_path>  -t <token>  -p <project_id>  -l <power_line_name>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('ALL THESE OPTIONS ARE REQUIRED: '
+                  '-g <gps_serial_path>  -p <project_id>  -l <power_line_name>  -t <token>')
+            sys.exit()
+        elif opt in ("-g", "--gps_serial_path"):
+            GPS_PATH = str(arg).strip().replace('"', "")
+        elif opt in ("-p", "--project_id"):
+            PROJECT_ID = arg
+        elif opt in ("-l", "--power_line_name"):
+            POWER_LINE_NAME = arg
+        elif opt in ("-t", "--token"):
+            TOKEN = str(arg).strip().replace('"\'', "")
+
+    if len(argv) >= 4:
+        CameraThread()
+        UploadThread()
+        while True:
+            pass
+    else:
+        print('ALL THESE OPTIONS ARE REQUIRED: '
+              '-g <gps_serial_path>  -p <project_id>  -l <power_line_name>  -t <token>')
