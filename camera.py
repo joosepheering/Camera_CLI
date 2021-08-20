@@ -159,16 +159,16 @@ class CameraThread(Thread):
                 if start_trigger_timer(SHOOTING_TIME):
                     cord = self.gps.get_coordinates()
                     # IF GPS has lock
-                    # if cord[2]:
+                    if cord[2]:
                         # IF Camera is connected
-                    if self.cam.connect():
-                        print("Take picture")
-                        picture_path = self.cam.capture_photo_and_download()
-                        print(picture_path)
-                        write_exif(picture_path, cord[0], cord[1])
-                        sleep(1)
-                        print(f"Picture taken: {picture_path}")
-                        os.remove(f"{picture_path}_original")
+                        if self.cam.connect():
+                            print("Take picture")
+                            picture_path = self.cam.capture_photo_and_download()
+                            print(picture_path)
+                            write_exif(picture_path, cord[0], cord[1])
+                            sleep(1)
+                            print(f"Picture taken: {picture_path}")
+                            os.remove(f"{picture_path}_original")
             except Exception as e:
                 print(e)
 

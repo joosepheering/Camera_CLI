@@ -1,6 +1,10 @@
 #!/bin/bash
 
-while getopts "g:p:l:t:" opt
+gpspath="/dev/ttyACM0"
+token=""
+
+
+while getopts "gp:l:t" opt
 do
   case "${opt}" in
     g) gpspath="${OPTARG}";;
