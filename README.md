@@ -127,6 +127,7 @@ Create 2 folders on raspberry:
   
  
     cd
+    
     ./start_cam_stream.sh -p <project_id> -l <power_line_name> -g <gps_interface> -t <token> 
  
  =
