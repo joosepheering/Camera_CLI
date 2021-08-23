@@ -21,7 +21,7 @@ GPS_PATH = ""               # "/dev/cu.usbmodem141401"
 PROJECT_ID = ""             # 99
 POWER_LINE_NAME = ""        # Demo
 TOKEN = ""                  # sdsffieo98788yf34h98
-
+UBIRD_URL = ""              # https://api.ubird.eu
 
 def cmdline(command):
     process = Popen(
@@ -135,14 +135,14 @@ class UBird:
         pass
 
     def upload_photo(self, photo_path: str):
-        return cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/upload/project/{self.project_id}/pictures" -H "accept: */*" -H "Content-Type: multipart/form-data" -H "Authorization: Bearer {TOKEN}" -F "file=@{photo_path};type=image/jpeg"')
+        return cmdline(f'curl -X POST {UBIRD_URL}"/ubird/upload/project/{self.project_id}/pictures" -H "accept: */*" -H "Content-Type: multipart/form-data" -H "Authorization: Bearer {TOKEN}" -F "file=@{photo_path};type=image/jpeg"')
 
     def import_photo(self):
         lat1 = 89.9
         lon1 = -179.9
         lat2 = -89.9
         lon2 = 179.9
-        return cmdline(f'curl -X POST "https://api.ubird.wtf/ubird/jobs/project/{self.project_id}/uploads/{lat1}/{lon1}/{lat2}/{lon2}/start?powerLineName={self.power_line_name}" -H "accept: application/json" -H "Authorization: Bearer {TOKEN}"')
+        return cmdline(f'curl -X POST {UBIRD_URL}"/ubird/jobs/project/{self.project_id}/uploads/{lat1}/{lon1}/{lat2}/{lon2}/start?powerLineName={self.power_line_name}" -H "accept: application/json" -H "Authorization: Bearer {TOKEN}"')
 
 
 class CameraThread(Thread):
@@ -210,6 +210,7 @@ if __name__ == "__main__":
         print("-p <project_id>  = 99")
         print("-l <power_line_name> == Demo")
         print("-t <token> == fdkmfslkmnfenklfm")
+        print("-u <ubird_url> == https://api.ubird.eu")
 
     try:
         opts, args = getopt.getopt(argv, "hg:p:l:t:", ["gps_serial_path=", "project_id=", "power_line_name=", "token="])
@@ -228,8 +229,10 @@ if __name__ == "__main__":
             POWER_LINE_NAME = arg
         elif opt in ("-t", "--token"):
             TOKEN = str(arg).strip().replace('"\'', "")
+        elif opt in ("-u", "--ubird_url"):
+            UBIRD_URL = str(arg).strip().replace('"\'', "")
 
-    if len(argv) >= 8:
+    if len(argv) >= 10:
         CameraThread()
         UploadThread()
         while True:
